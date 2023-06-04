@@ -2,3 +2,6 @@ output*
 __pycache__
 
 .idea
+
+ssmba_out
+ssmba_out.label

@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 from utils import hf_masked_encode, hf_reconstruction_prob_tok, fill_batch
 
+
 def gen_neighborhood(args):
 
     # initialize seed
@@ -52,8 +53,6 @@ def gen_neighborhood(args):
     else:
         contexts = None
 
-
-
     # shard the input and labels
     if args.num_shards > 0:
         shard_start = (int(num_lines/args.num_shards) + 1) * args.shard
@@ -63,13 +62,13 @@ def gen_neighborhood(args):
 
     # open output files
     if args.num_shards != 1:
-        s_rec_file = open(args.output_prefix + '_' + str(args.shard), 'w')
+        s_rec_file = open(args.output_prefix + '_' + str(args.shard), 'w', encoding="utf-8")
         if output_labels:
-            l_rec_file = open(args.output_prefix + '_' + str(args.shard) + '.label', 'w')
+            l_rec_file = open(args.output_prefix + '_' + str(args.shard) + '.label', 'w', encoding="utf-8")
     else:
-        s_rec_file = open(args.output_prefix, 'w')
+        s_rec_file = open(args.output_prefix, 'w', encoding="utf-8")
         if output_labels:
-            l_rec_file = open(args.output_prefix + '.label', 'w')
+            l_rec_file = open(args.output_prefix + '.label', 'w', encoding="utf-8")
 
     # sentences and labels to process
     sents = []
@@ -198,6 +197,7 @@ def gen_neighborhood(args):
         # clean up tensors
         del toks
         del masks
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 
+
 def hf_masked_encode(
         tokenizer,
         sentences,
@@ -79,6 +80,7 @@ def hf_masked_encode(
 
     return torch.tensor(tokens).long(), torch.tensor(mask_targets).long()
 
+
 def hf_reconstruction_prob_tok(masked_tokens, target_tokens, tokenizer, model, softmax_mask, reconstruct=False, topk=1):
     single = False
 
@@ -113,7 +115,6 @@ def hf_reconstruction_prob_tok(masked_tokens, target_tokens, tokenizer, model, s
         l[softmax_mask] = float('-inf')
     probs = logits.softmax(dim=-1)
 
-
     if (reconstruct):
 
         # sample from topk
@@ -142,6 +143,7 @@ def hf_reconstruction_prob_tok(masked_tokens, target_tokens, tokenizer, model, s
             return masked_tokens, masked_fill
 
     return torch.sum(torch.log(probs[masked_orig_enum])).item()
+
 
 def fill_batch(args,
                tokenizer,
