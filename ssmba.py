@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 from utils import hf_masked_encode, hf_reconstruction_prob_tok, fill_batch
+import time
 
 
 def gen_neighborhood(args):
@@ -29,7 +30,7 @@ def gen_neighborhood(args):
             softmax_mask[v] = True
 
     # load the inputs and labels
-    lines = [tuple(s.strip().split('\t')) for s in open(args.in_file).readlines()]
+    lines = [tuple(s.strip().split('\t')) for s in open(args.in_file, encoding="utf-8").readlines()]
     num_lines = len(lines)
     lines = [[[s] for s in s_list] for s_list in list(zip(*lines))]
     assert len(lines) <= 2, "Only single sentences or sentence pairs can be encoded."
@@ -281,5 +282,6 @@ if __name__ == "__main__":
     if not args.tokenizer:
         args.tokenizer = args.model
 
-
+    start_time = time.time()
     gen_neighborhood(args)
+    print('Execution time:', time.strftime("%H:%M:%S", time.gmtime(time.time() - start_time)))
