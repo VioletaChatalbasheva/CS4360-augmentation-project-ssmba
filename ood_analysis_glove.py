@@ -59,16 +59,16 @@ def ood_analysis(naug):
     negative_augmented_data = reduced_augmented_data[np.array(augmented_labels) == 0]
 
     # Plot the reduced original and augmented data with different colors for positive and negative reviews
-    plt.scatter(positive_original_data[:, 0], positive_original_data[:, 1], color='green', label='Original Positive')
-    plt.scatter(negative_original_data[:, 0], negative_original_data[:, 1], color='red', label='Original Negative')
-    plt.scatter(positive_augmented_data[:, 0], positive_augmented_data[:, 1], color='lightgreen', label='Augmented Positive')
-    plt.scatter(negative_augmented_data[:, 0], negative_augmented_data[:, 1], color='salmon', label='Augmented Negative')
-    plt.title(f"OOD generalization for naug={naug}")
+    plt.scatter(positive_original_data[:, 0], positive_original_data[:, 1], color='green', label='Original Positive', s=10)
+    plt.scatter(negative_original_data[:, 0], negative_original_data[:, 1], color='red', label='Original Negative', s=10)
+    plt.scatter(positive_augmented_data[:, 0], positive_augmented_data[:, 1], color='lightgreen', label='Augmented Positive', s=10)
+    plt.scatter(negative_augmented_data[:, 0], negative_augmented_data[:, 1], color='salmon', label='Augmented Negative', s=10)
+    plt.title(f"OOD generalization for 500 IMDB examples and naug={naug}")
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
 
     # Move the legend outside the plot
-    plt.legend(bbox_to_anchor=(0.5, 1.20), loc='upper center', ncol=2)
+    plt.legend(bbox_to_anchor=(0.5, 1.28), loc='upper center', ncol=2)
 
     plt.tight_layout()  # Adjust plot layout for better display
     plt.show()
