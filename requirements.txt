@@ -1,3 +1,5 @@
 transformers==4.16.2
 torch
 numpy
+matplotlib
+scikit-learn
