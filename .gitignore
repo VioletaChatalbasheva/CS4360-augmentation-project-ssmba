@@ -6,4 +6,6 @@ __pycache__
 ssmba_out_imdb_500_*
 ssmba_out_imdb_500_*.label
 
+IMDB_*.csv
+
 glove.6B
