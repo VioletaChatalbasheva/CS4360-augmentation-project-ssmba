@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+import pandas as pd
 
 
-def ood_analysis(naug):
+def ood_analysis(naug, dataset, bias):
     # Load pre-trained GloVe Word Vectors
-    glove_file = 'glove.6B/glove.6B.50d.txt'
+    glove_file = 'glove.6B/glove.6B.300d.txt'
     word_vectors = {}
     with open(glove_file, encoding='utf-8') as f:
         for line in f:
@@ -14,21 +15,12 @@ def ood_analysis(naug):
             vectors = np.asarray(values[1:], dtype='float32')
             word_vectors[word] = vectors
 
-    with open('test/input.txt', "r", encoding="utf-8") as input_file, open('test/labels.txt', "r") as labels_file, \
-            open('ssmba_out_imdb_500_' + str(naug), "r", encoding="utf-8") as augmented_input_file, open('ssmba_out_imdb_500_' + str(naug) + '.label', "r") as augmented_labels_file:
-        original_reviews = input_file.readlines()
+    df = pd.read_csv(dataset + '_' + bias + '_' + str(naug) + '_ssmba_train.csv', header=None, names=["label", "text"])
 
-        labels = []
-        for label in labels_file.readlines():
-            labels.append(int(label))
-
-        augmented_reviews = []
-        for augmented_review in augmented_input_file.readlines():
-            augmented_reviews.append(augmented_review.rstrip())
-
-        augmented_labels = []
-        for label in augmented_labels_file.readlines():
-            augmented_labels.append(int(label))
+    augmented_reviews = df['text'][:-500]
+    original_reviews = df['text'][-500:]
+    augmented_labels = df['label'][:-500]
+    original_labels = df['label'][-500:]
 
     # Generate document vectors by averaging word vectors
     def generate_document_vector(text):
@@ -53,8 +45,8 @@ def ood_analysis(naug):
     reduced_augmented_data = reduced_data[len(original_reviews):]
 
     # Separate the reduced data based on the labels
-    positive_original_data = reduced_original_data[np.array(labels) == 1]
-    negative_original_data = reduced_original_data[np.array(labels) == 0]
+    positive_original_data = reduced_original_data[np.array(original_labels) == 1]
+    negative_original_data = reduced_original_data[np.array(original_labels) == 0]
     positive_augmented_data = reduced_augmented_data[np.array(augmented_labels) == 1]
     negative_augmented_data = reduced_augmented_data[np.array(augmented_labels) == 0]
 
@@ -63,17 +55,23 @@ def ood_analysis(naug):
     plt.scatter(negative_original_data[:, 0], negative_original_data[:, 1], color='red', label='Original Negative', s=10)
     plt.scatter(positive_augmented_data[:, 0], positive_augmented_data[:, 1], color='lightgreen', label='Augmented Positive', s=10)
     plt.scatter(negative_augmented_data[:, 0], negative_augmented_data[:, 1], color='salmon', label='Augmented Negative', s=10)
-    plt.title(f"OOD generalization for 500 IMDB examples and naug={naug}")
+    if bias == "bias":
+        plt.title(f"OOD generalization on {dataset} biased examples with naug={naug}")
+    else:
+        plt.title(f"OOD generalization on {dataset} naive examples with naug={naug}")
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
 
     # Move the legend outside the plot
     plt.legend(bbox_to_anchor=(0.5, 1.28), loc='upper center', ncol=2)
+    plt.savefig(f'../results/ood/{dataset}_{bias}_{naug}', bbox_inches='tight')
 
     plt.tight_layout()  # Adjust plot layout for better display
     plt.show()
 
 
 if __name__ == "__main__":
-    for naug in [1, 2, 4, 8, 16, 32]:
-        ood_analysis(naug=naug)
+    for dataset in ["IMDB", "MNLI"]:
+        for bias in ["no_bias", "bias"]:
+            for naug in [2, 4, 8, 16, 32]:
+                ood_analysis(naug=naug, dataset=dataset, bias=bias)
